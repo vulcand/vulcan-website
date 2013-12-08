@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vulcan - Proxy for web services</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4/styles/tomorrow-night.min.css">
+
+    <style type="text/css" media="screen">
+      .logo {
+          display: block;
+          width: 166px;
+          height: 63px;
+          background: url(images/vulcan.jpg)
+      }
+
+      body {
+          background-color:#fafafa;
+          font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+      }
+
+      code {
+          font-size: 18px;
+      }
+
+      .container {
+          padding: 10px 80px;
+          
+      }
+
+      .links {
+          font-size: 20px;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <section class="container">
+      <header>
+        <a href="/" class="logo" alt="Vulcan"></a>
+      </header>
+      <section>
+        <h2>Proxy for web services</h2>
+        <p>Vulcan is a proxy built for APi's specific needs, it's a proxy that you program in JavaScript.</p>
+        <pre><code>function handle(request){
+    return {upstreams: ["http://localhost:5000", "http://localhost:5001"]}
+}
+        </code></pre>
+      </section>
+      <section>
+        <h2>How slow can your proxy be?</h2>
+        <p>With services, proxy is rarely a bottleneck, whereas DB and filesystem are. Vulcan supports rate limiting using memory, Cassandra or Redis backends.</p>
+        <pre><code>function handle(request){
+    return {
+        failover: true,
+        upstreams: ["http://localhost:5000", "http://localhost:5001"],
+        rates: {request.ip: ["10 requests/second", "1000 KB/second"]}
+    }
+}
+        </code></pre>
+      </section>
+      <section>
+        <h2>Discovery</h2>
+        <p>Keeping upstreams in a discovery service simplifies deployment and configuration management. Vulcan supports Etcd or Zookeeper.</p>
+        <pre><code>function handle(request){
+    return {
+        upstreams: discover("/upstreams"),
+        rates: {request.ip: ["10 requests/second", "1000 KB/second"]}
+    }
+}</code></pre>
+      </section>
+      <section>
+        <h2>Caching and Auth</h2>
+        <p>Implement custom auth and cache results using memory, Redis or Cassandra.</p>
+
+        <pre><code>function handle(request){
+    response = get(discover("/auth-endpoints"), {auth: request.auth}, {cache: true})
+    if(!response.code == 200) {
+        return response
+    }
+    return {
+        upstreams: discover("/upstreams"),
+        rates: {request.ip: ["10 requests/second", "1000 KB/second"]}
+    }
+}
+</code></pre>
+      </section>
+      <section>
+        <h2>Further reading</h2>
+        <ul class="links">
+          <li>
+            Github: <a href="https://github.com/mailgun/vulcan/tree/sasha/js">https://github.com/mailgun/vulcan</a>
+          </li>
+          <li>
+            <a href="https://groups.google.com/forum/#!forum/vulcan-proxy">Mailing list and forum</a>
+          </li>
+        </ul>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
